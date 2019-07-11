@@ -16,7 +16,6 @@ Automatic installation software to get Stanford Literary Lab members up and runn
 
 ### 1. Install a package manager (Homebrew for Mac/Choco for Windows)
 
-
 ### 2. Install Anaconda
 
 
@@ -54,7 +53,7 @@ Automatic installation software to get Stanford Literary Lab members up and runn
 * [Slingshot](https://github.com/quadrismegistus/mpi-slingshot)
 
 
-### 7. Configure installation
+### 7. Configure Lab installation
 
 
 ### 8. Start a sample notebook

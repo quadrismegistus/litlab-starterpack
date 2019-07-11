@@ -23,5 +23,15 @@ Automatic installation software to get Stanford Literary Lab members up and runn
 
 ### 4. Install useful software
 
+### 5. Set up github
 
-### 5. Set up
+
+### 6. Download Lab software
+
+LLP and Slingsho
+
+
+### 7. Configure installation
+
+
+### 8. Start a sample notebook

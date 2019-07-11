@@ -9,6 +9,7 @@ PIP_PACKAGES=sorted(
 	'spacy','nltk']
 )
 
+PATH_BASH_PROFILE = os.path.join(HOME,'.bash_profile')
 
 
 	 #,'scikit-learn']
@@ -30,6 +31,10 @@ BREW_INSTALL_CMDS = [
 	'brew cask install textmate'
 ]
 """
+
+def source_bash_profile():
+	if os.path.exists(PATH_BASH_PROFILE) and shutil.which('source'):
+		exec('source '+PATH_BASH_PROFILE)
 
 def exec(cmd):
 	print('>> executing:',cmd)
@@ -243,6 +248,10 @@ def check_git():
 	ssh_ok = check_ssh()
 	if ssh_ok: return True
 
+	# Step 0. Make sure SSH directory exists
+	path_dot_ssh=os.path.join(HOME,'.ssh')
+	if not os.path.exists(path_dot_ssh): os.mkdir(path_dot_ssh)
+
 	# Step 1. Make Key
 	path_id_rsa = os.path.join(HOME,'id_rsa')
 	git_gen_ssh_key(path_id_rsa)
@@ -276,11 +285,14 @@ def install_lab_software():
 ## MAIN
 
 def run_all():
-	# What are the steps
-	#steps = [check_anaconda, check_packages]
+	# Source the profile
+	source_bash_profile()
+
+	# Set the steps
 	steps = [check_brew, check_anaconda, check_packages, check_apps, check_git]
 	num_steps = len(steps)
 
+	# Run through the steps
 	for i,step in enumerate(steps):
 		print('\n>> Step #%s of %s' % (i+1, num_steps))
 		res=step()

@@ -4,7 +4,14 @@ from __future__ import print_function
 import shutil,os,sys,subprocess,webbrowser,time
 from os.path import expanduser
 HOME=expanduser("~")
-PIP_PACKAGES=sorted(['bs4','xopen','bleach','ujson','unicodecsv','mpi4py','numpy','pandas','scipy','paramiko']) #,'scikit-learn']
+PIP_PACKAGES=sorted(
+	['bs4','xopen','bleach','ujson','unicodecsv','mpi4py','numpy','pandas','scipy','paramiko',
+	'spacy','nltk']
+)
+
+
+
+	 #,'scikit-learn']
 #BREW_CASK_CMD='ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null ; brew install caskroom/cask/brew-cask 2> /dev/null'
 
 
@@ -108,7 +115,6 @@ def check_packages():
 	import importlib.util
 
 	print('>> Installing common Python packages...')
-	print()
 
 	for pkg in PIP_PACKAGES:
 		spec = importlib.util.find_spec(pkg)
@@ -154,6 +160,7 @@ def check_ssh():
 	import paramiko
 	ssh = paramiko.SSHClient()
 	ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+	from paramiko.ssh_exception import SSHException,BadHostKeyException,AuthenticationException,socket
 
 	try:
 		#ssh.connect('github.com', username='git', key_filename=key_file)
@@ -258,7 +265,10 @@ def check_git():
 
 
 
+### STEP 6. Installing Lab Software
 
+def install_lab_software():
+	pass
 
 
 
@@ -284,4 +294,4 @@ if __name__=='__main__':
 
 	run_all()
 
-	print('\nAll set up! Happy hacking...')
+	print('\n>> All set up! Happy hacking...')

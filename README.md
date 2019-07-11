@@ -21,15 +21,6 @@ Automatic installation software to get Stanford Literary Lab members up and runn
 
 ### 3. Install Python packages
 
-* bleach
-* bs4
-* mpi4py
-* numpy
-* pandas
-* scipy
-* ujson
-* unicodecsv
-* xopen
 
 ### 4. Install useful software
 
@@ -47,7 +38,7 @@ Automatic installation software to get Stanford Literary Lab members up and runn
 ### 5. Set up git and github
 
 
-### 6. Download Lab software
+### 6. Install Lab software
 
 * [LLP](https://github.com/quadrismegistus/llp_lab)
 * [Slingshot](https://github.com/quadrismegistus/mpi-slingshot)

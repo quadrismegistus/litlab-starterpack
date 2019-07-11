@@ -50,8 +50,8 @@ Automatic installation software to get Stanford Literary Lab members up and runn
 
 ### 6. Download Lab software
 
-* [LLP](../llp_lab)
-* [Slingshot](../mpi-slingshot)
+* [LLP](https://github.com/quadrismegistus/llp_lab)
+* [Slingshot](https://github.com/quadrismegistus/mpi-slingshot)
 
 
 ### 7. Configure installation

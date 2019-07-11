@@ -1,10 +1,10 @@
 # litlab-starterpack
 
-Installation software to get Stanford Literary Lab members up and running quickly.
+Automatic installation software to get Stanford Literary Lab members up and running quickly.
 
-## How to download and the installer
+## How to download and run the installer
 
-1. [Download install Anaconda for Python 3.x](https://anaconda.com/distribution)
+1. For Windows users: [Download install Anaconda for Python 3.x](https://anaconda.com/distribution)
 2. [Download this repository](https://github.com/quadrismegistus/litlab-starterpack/archive/master.zip)
 3. Unzip it and put it on your desktop
 3. Open the Terminal
@@ -14,8 +14,14 @@ Installation software to get Stanford Literary Lab members up and running quickl
 
 ## Installation steps
 
+### 1. Install a package manager exists (Homebrew for Mac/Choco for Windows)
 
-### 1. Check whether Anaconda exists
+
+### 2. Install Anaconda
+
+### 3. Install Python packages
+
+### 4. Install useful software
 
 
-### 2. Install Pip packages
+### 5. Set up

@@ -5,7 +5,7 @@ import shutil,os,sys
 from os.path import expanduser
 HOME=expanduser("~")
 
-PIP_PACKAGES=['bs4','xopen','bleach','ujson','unicodecsv','mpi4py','numpy','pandas','scipy','scikit-learn']
+PIP_PACKAGES=['bs4','xopen','bleach','ujson','unicodecsv','mpi4py','numpy','pandas','scipy','scikit-learn','wget']
 
 ## CHECKING ANACONDA
 def check_anaconda():
@@ -42,7 +42,6 @@ def add_anaconda_to_path():
 
 
 
-
 ## PIP
 def check_packages():
 	import importlib.util
@@ -60,6 +59,14 @@ def check_packages():
 
 	return True
 
+
+
+
+
+def install_mac_apps():
+	url_textmate='https://api.textmate.org/downloads/release?os=10.9'
+
+	
 
 
 

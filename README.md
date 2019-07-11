@@ -12,23 +12,46 @@ Automatic installation software to get Stanford Literary Lab members up and runn
 5. Type: `python setup.py`
 
 
-## Installation steps
+## What the installer will do
 
-### 1. Install a package manager exists (Homebrew for Mac/Choco for Windows)
+### 1. Install a package manager (Homebrew for Mac/Choco for Windows)
 
 
 ### 2. Install Anaconda
 
+
 ### 3. Install Python packages
+
+* bleach
+* bs4
+* mpi4py
+* numpy
+* pandas
+* scipy
+* ujson
+* unicodecsv
+* xopen
 
 ### 4. Install useful software
 
-### 5. Set up github
+* Mac:
+	* TextMate (text editor)
+  * iTerm2 (terminal app)
+* Windows:
+	* SublimeText3 (text editor)
+	* cmder (terminal app)
+* Both:
+	* wget
+	* git
+
+
+### 5. Set up git and github
 
 
 ### 6. Download Lab software
 
-LLP and Slingsho
+* [LLP](../llp_lab)
+* [Slingshot](../mpi-slingshot)
 
 
 ### 7. Configure installation

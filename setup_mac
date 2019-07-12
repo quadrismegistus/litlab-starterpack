@@ -38,6 +38,13 @@ GITHUB_EMAIL=''
 
 NAP=5
 
+def print_logo():
+	with open(os.path.join(PATH_HERE,'logo.txt')) as f:
+		logo=f.read()
+
+	print(logo)
+
+
 
 """
 BREW_INSTALL_CMDS = [
@@ -323,6 +330,7 @@ def check_lab_software():
 	# LLP
 	llp_path_to_cd_to = os.path.abspath(os.path.join(LITLAB_LLP_ROOT,'..'))
 	add_to_python_path(llp_path_to_cd_to)
+	add_to_path( os.path.join(LITLAB_LLP_ROOT,'bin') )
 	if not os.path.exists(LITLAB_LLP_ROOT):
 		path_to_cd_to=llp_path_to_cd_to
 		path_of_cloned_dir = os.path.join(path_to_cd_to,'llp_lab')
@@ -402,10 +410,12 @@ def add_to_python_path(path, path_bash_profile=PATH_BASH_PROFILE):
 
 
 def install_basic_llp(corpora=['MarkMark']):
+	print('>> checking for corpora through LLP')
 	import llp
 	for cname in corpora:
 		corpus = llp.load(cname)
 		if not os.path.exists(corpus.path_metadata):
+			print('>> downloading corpus:',cname)
 			corpus.download()
 	return True
 
@@ -433,7 +443,9 @@ def run_all():
 			print('>> Success!')
 
 if __name__=='__main__':
+	print_logo()
 	print('>> Welcome to the Literary Lab Starter Pack Installer!')
+	time.sleep(2)
 
 	run_all()
 

@@ -2,6 +2,8 @@
 
 Automatic installation software to get Stanford Literary Lab members up and running quickly.
 
+For more information, see [the wiki](https://litlab.stanford.edu/wiki/starterpack).
+
 ## How to download and run the installer
 
 1. For Windows users: [Download install Anaconda for Python 3.x](https://anaconda.com/distribution)

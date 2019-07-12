@@ -407,6 +407,7 @@ def install_basic_llp(corpora=['MarkMark']):
 		corpus = llp.load(cname)
 		if not os.path.exists(corpus.path_metadata):
 			corpus.download()
+	return True
 
 
 

@@ -419,8 +419,8 @@ def run_all():
 	source_bash_profile()
 
 	# Set the steps
-	#steps = [check_brew, check_anaconda, check_packages, check_apps, check_git]
-	steps = [check_lab_software, install_basic_llp]
+	steps = [check_brew, check_anaconda, check_packages, check_apps, check_git, check_lab_software, install_basic_llp]
+	#steps = []
 	num_steps = len(steps)
 
 	# Run through the steps

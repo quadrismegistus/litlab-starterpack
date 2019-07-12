@@ -262,7 +262,7 @@ def git_add_ssh_key_to_github(path_id_rsa):
 def check_git(path_id_rsa=GIT_PATH_ID_RSA):
 	global GITHUB_USERNAME,GITHUB_EMAIL
 
-	print('>> using key:',path_id_rsa)
+	#print('>> using key:',path_id_rsa)
 
 	print('>> Checking whether git is set up to connect to GitHub using SSH...')
 	ssh_ok = check_ssh()
@@ -274,7 +274,7 @@ def check_git(path_id_rsa=GIT_PATH_ID_RSA):
 
 	# Step 1. Make Key
 
-	print('>> using key:',path_id_rsa)
+	#print('>> using key:',path_id_rsa)
 	git_gen_ssh_key(path_id_rsa)
 
 	# Step 2. Add key to key list

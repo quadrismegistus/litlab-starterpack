@@ -1,0 +1,7 @@
+[Default]
+
+# Set LitLab specific corpora
+PATH_TO_CORPORA = corpora
+
+# LitLab specific Book-NLP
+PATH_TO_BOOKNLP_BINARY= bin/book-nlp/runjava

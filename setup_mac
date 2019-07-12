@@ -4,6 +4,22 @@ from __future__ import print_function
 import shutil,os,sys,subprocess,webbrowser,time
 from os.path import expanduser
 HOME=expanduser("~")
+
+PATH_HERE=os.path.abspath(os.path.dirname(__file__))
+
+LITLAB_ROOT=os.path.join(HOME,'litlab')
+LITLAB_CORPUS_ROOT=os.path.join(LITLAB_ROOT,'corpora')
+LITLAB_LLP_ROOT=os.path.join(LITLAB_ROOT,'llp')
+LITLAB_SLINGSHOT_ROOT=os.path.join(LITLAB_ROOT,'slingshot')
+
+GIT_PATH_ID_RSA = os.path.join(HOME,'.ssh','id_rsa')
+
+
+URL_LLP_GIT='git@github.com:quadrismegistus/llp_lab.git'
+URL_SLINGSHOT_GIT='git@github.com:quadrismegistus/mpi-slingshot.git'
+URL_BOGUSTEST_GIT='git@github.com:erikfredner/test.git'
+
+
 PIP_PACKAGES=sorted(
 	['bs4','xopen','bleach','ujson','unicodecsv','mpi4py','numpy','pandas','scipy','paramiko',
 	'spacy','nltk']
@@ -17,8 +33,8 @@ PATH_BASH_PROFILE = os.path.join(HOME,'.bash_profile')
 
 
 
-GITHUB_USERNAME='quadrismegistus'
-GITHUB_EMAIL='heuser@stanford.edu'
+GITHUB_USERNAME=''
+GITHUB_EMAIL=''
 
 NAP=5
 
@@ -39,6 +55,8 @@ def source_bash_profile():
 def exec(cmd):
 	print('>> executing:',cmd)
 	os.system(cmd)
+	#output = subprocess.check_output(cmd.split())
+	#return output
 
 def hidden_exec(cmd):
 	output=''
@@ -101,14 +119,14 @@ def check_anaconda():
 	else:
 		return True
 
-def add_anaconda_to_path():
-	anaconda_path = shutil.which('conda')
-	anaconda_bin_path = os.path.split(anaconda_path)[0]
-
-	ofn=os.path.join(HOME,'.bash_profile')
-	with open(ofn,'a+') as of:
-		print('\n\nexport PATH=%s:$PATH' % anaconda_bin_path)
-
+# def add_anaconda_to_path():
+# 	anaconda_path = shutil.which('conda')
+# 	anaconda_bin_path = os.path.split(anaconda_path)[0]
+#
+# 	ofn=os.path.join(HOME,'.bash_profile')
+# 	with open(ofn,'a+') as of:
+# 		print('\n\nexport PATH=%s:$PATH' % anaconda_bin_path)
+#
 
 
 
@@ -241,8 +259,10 @@ def git_add_ssh_key_to_github(path_id_rsa):
 	print ('>> Continuing...')
 
 
-def check_git():
+def check_git(path_id_rsa=GIT_PATH_ID_RSA):
 	global GITHUB_USERNAME,GITHUB_EMAIL
+
+	print('>> using key:',path_id_rsa)
 
 	print('>> Checking whether git is set up to connect to GitHub using SSH...')
 	ssh_ok = check_ssh()
@@ -253,7 +273,8 @@ def check_git():
 	if not os.path.exists(path_dot_ssh): os.mkdir(path_dot_ssh)
 
 	# Step 1. Make Key
-	path_id_rsa = os.path.join(HOME,'id_rsa')
+
+	print('>> using key:',path_id_rsa)
 	git_gen_ssh_key(path_id_rsa)
 
 	# Step 2. Add key to key list
@@ -276,8 +297,116 @@ def check_git():
 
 ### STEP 6. Installing Lab Software
 
-def install_lab_software():
-	pass
+def clone_repo(path_to_cd_to, repo_name, git_url, final_path):
+	path_of_cloned_dir = os.path.join(path_to_cd_to,repo_name)
+	os.chdir(path_to_cd_to)
+	try:
+		out=exec('git clone {git_url}'.format(git_url=git_url))
+		os.rename(path_of_cloned_dir,final_path)
+
+	except subprocess.CalledProcessError as e:
+
+		print(e)
+
+		print('\n!! ERROR: You do not yet have access to the private Literary Lab repositories.')
+		print('!! Please email Ryan Heuser (heuser@stanford.edu) with your github username to gain access.')
+
+		exit()
+
+
+def check_lab_software():
+	# make sure litlab and corpus folders are installed
+	for path in [LITLAB_ROOT,LITLAB_CORPUS_ROOT]:
+		if not os.path.exists(path):
+			os.makedirs(path)
+
+	# LLP
+	llp_path_to_cd_to = os.path.abspath(os.path.join(LITLAB_LLP_ROOT,'..'))
+	add_to_python_path(llp_path_to_cd_to)
+	if not os.path.exists(LITLAB_LLP_ROOT):
+		path_to_cd_to=llp_path_to_cd_to
+		path_of_cloned_dir = os.path.join(path_to_cd_to,'llp_lab')
+		path_final=LITLAB_LLP_ROOT
+		url_git=URL_LLP_GIT
+
+		if not os.path.exists(path_of_cloned_dir):
+			clone_repo(path_to_cd_to, path_of_cloned_dir, url_git, path_final)
+		elif not os.path.exists(LITLAB_LLP_ROOT):
+			os.rename(path_of_cloned_dir, path_final)
+		else:
+			pass  # ?
+
+	else:
+		print('>> updating existing repository:',LITLAB_LLP_ROOT)
+		os.chdir(LITLAB_LLP_ROOT)
+		#exec('git pull')
+
+	# Slingshot
+	if not os.path.exists(LITLAB_SLINGSHOT_ROOT):
+		path_to_cd_to = os.path.abspath(os.path.join(LITLAB_SLINGSHOT_ROOT,'..'))
+		path_of_cloned_dir = os.path.join(path_to_cd_to,'mpi-slingshot')
+		path_final=LITLAB_SLINGSHOT_ROOT
+		url_git=URL_SLINGSHOT_GIT
+
+		if not os.path.exists(path_of_cloned_dir):
+			clone_repo(path_to_cd_to, path_of_cloned_dir, url_git, path_final)
+		elif not os.path.exists(LITLAB_LLP_ROOT):
+			os.rename(path_of_cloned_dir, path_final)
+		else:
+			pass  # ?
+	else:
+		print('>> updating existing repository:',LITLAB_SLINGSHOT_ROOT)
+		os.chdir(LITLAB_SLINGSHOT_ROOT)
+		#exec('git pull')
+	# no matter what?
+
+	add_to_python_path(LITLAB_SLINGSHOT_ROOT)
+	add_to_path( os.path.join(LITLAB_SLINGSHOT_ROOT,'bin') )
+
+
+	## make sure llp_config.txt is saved
+	lab_llp_config_path = os.path.join(LITLAB_ROOT,'llp_config.txt')
+	lab_llp_manifest_path = os.path.join(LITLAB_ROOT,'llp_manifest.txt')
+
+	if not os.path.exists(lab_llp_config_path):
+		#shutil.copyfile(PATH_HERE)
+		lab_path_config_default=os.path.join(PATH_HERE,'llp_config.txt')
+		#print(lab_path_config_default, lab_llp_config_path)
+		shutil.copyfile(lab_path_config_default, lab_llp_config_path)
+
+	return True
+
+
+	#cmd='git clone {git_url}'.format(path=LITLAB_ROOT, git_url=URL_BOGUSTEST_GIT)
+	#out=exec(cmd)
+
+	#clone_repo(LITLAB_ROOT, 'test', URL_BOGUSTEST_GIT, '/Users/ryan/litlab/test')
+
+def add_to_path(path, path_bash_profile=PATH_BASH_PROFILE,pathtype='PATH'):
+	if os.path.exists(path_bash_profile):
+		with open(path_bash_profile) as f:
+			for ln in f:
+				if ('$'+pathtype in ln) and (path in ln.replace('=',' ').replace(':',' ').split()):
+					# already done
+					print('!',ln)
+					return True
+
+	# not found? ok then write it
+	with open(path_bash_profile,'a+') as of:
+		newln='\n\nexport {pathtype}="{newpath}:${pathtype}"      #from litlab-starterpack\n\n'.format(pathtype=pathtype,newpath=path)
+		of.write(newln)
+		#print(newln)
+
+def add_to_python_path(path, path_bash_profile=PATH_BASH_PROFILE):
+	return add_to_path(path, path_bash_profile=path_bash_profile, pathtype='PYTHONPATH')
+
+
+def install_basic_llp(corpora=['MarkMark']):
+	import llp
+	for cname in corpora:
+		corpus = llp.load(cname)
+		if not os.path.exists(corpus.path_metadata):
+			corpus.download()
 
 
 
@@ -289,7 +418,8 @@ def run_all():
 	source_bash_profile()
 
 	# Set the steps
-	steps = [check_brew, check_anaconda, check_packages, check_apps, check_git]
+	#steps = [check_brew, check_anaconda, check_packages, check_apps, check_git]
+	steps = [check_lab_software, install_basic_llp]
 	num_steps = len(steps)
 
 	# Run through the steps

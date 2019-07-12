@@ -339,7 +339,7 @@ def check_lab_software():
 	else:
 		print('>> updating existing repository:',LITLAB_LLP_ROOT)
 		os.chdir(LITLAB_LLP_ROOT)
-		#exec('git pull')
+		exec('git pull')
 
 	# Slingshot
 	if not os.path.exists(LITLAB_SLINGSHOT_ROOT):
@@ -357,7 +357,7 @@ def check_lab_software():
 	else:
 		print('>> updating existing repository:',LITLAB_SLINGSHOT_ROOT)
 		os.chdir(LITLAB_SLINGSHOT_ROOT)
-		#exec('git pull')
+		exec('git pull')
 	# no matter what?
 
 	add_to_python_path(LITLAB_SLINGSHOT_ROOT)

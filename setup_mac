@@ -15,6 +15,7 @@ LITLAB_SLINGSHOT_ROOT=os.path.join(LITLAB_ROOT,'slingshot')
 GIT_PATH_ID_RSA = os.path.join(HOME,'.ssh','id_rsa')
 
 
+URL_LITLAB_GIT='git@github.com:quadrismegistus/litlab.git'
 URL_LLP_GIT='git@github.com:quadrismegistus/llp_lab.git'
 URL_SLINGSHOT_GIT='git@github.com:quadrismegistus/mpi-slingshot.git'
 URL_BOGUSTEST_GIT='git@github.com:erikfredner/test.git'
@@ -45,15 +46,6 @@ def print_logo():
 	print(logo)
 
 
-
-"""
-BREW_INSTALL_CMDS = [
-	#BREW_CASK_CMD,
-	'brew install wget',
-	'brew cask install iterm2',
-	'brew cask install textmate'
-]
-"""
 
 def source_bash_profile():
 	if os.path.exists(PATH_BASH_PROFILE) and shutil.which('source'):
@@ -165,13 +157,17 @@ def check_apps():
 	#for cmd in BREW_INSTALL_CMDS:
 	#	exec(cmd)
 
-	if not os.path.exists('/Applications/TextMate.app'):
-		print('>> Installing TextMate, a good and open-source text editor for Mac...')
-		exec('brew cask install textmate')
+	#if not os.path.exists('/Applications/TextMate.app'):
+	#	print('>> Installing TextMate, a good and open-source text editor for Mac...')
+	#	exec('brew cask install textmate')
 
-	if not os.path.exists('/Applications/iTerm.app'):
-		print('>> Installing iTerm2, a good and open-source terminal for Mac...')
-		exec('brew cask install iterm2')
+	if not os.path.exists('/Applications/Atom.app'):
+		print('>> Installing Atom, a good and open-source text editor for Mac...')
+		exec('brew cask install atom')
+
+	#if not os.path.exists('/Applications/iTerm.app'):
+	#	print('>> Installing iTerm2, a good and open-source terminal for Mac...')
+	#	exec('brew cask install iterm2')
 
 	if not test_if_exec_exists('wget'):
 		print('>> Installing wget, which lets us download things from the Terminal...')
@@ -304,12 +300,12 @@ def check_git(path_id_rsa=GIT_PATH_ID_RSA):
 
 ### STEP 6. Installing Lab Software
 
-def clone_repo(path_to_cd_to, repo_name, git_url, final_path):
+def clone_repo(path_to_cd_to, repo_name, git_url, final_path=None):
 	path_of_cloned_dir = os.path.join(path_to_cd_to,repo_name)
 	os.chdir(path_to_cd_to)
 	try:
-		out=exec('git clone {git_url}'.format(git_url=git_url))
-		os.rename(path_of_cloned_dir,final_path)
+		out=exec('git clone {git_url} && cd {repo_name} && git submodule init && git submodule update'.format(git_url=git_url,repo_name=repo_name))
+		if final_path: os.rename(path_of_cloned_dir,final_path)
 
 	except subprocess.CalledProcessError as e:
 
@@ -322,86 +318,43 @@ def clone_repo(path_to_cd_to, repo_name, git_url, final_path):
 
 
 def check_lab_software():
-	# make sure litlab and corpus folders are installed
-	for path in [LITLAB_ROOT,LITLAB_CORPUS_ROOT]:
-		if not os.path.exists(path):
-			os.makedirs(path)
-
 	# LLP
 	llp_path_to_cd_to = os.path.abspath(os.path.join(LITLAB_LLP_ROOT,'..'))
 	add_to_python_path(llp_path_to_cd_to)
-	add_to_path( os.path.join(LITLAB_LLP_ROOT,'bin') )
-	if not os.path.exists(LITLAB_LLP_ROOT):
-		path_to_cd_to=llp_path_to_cd_to
-		path_of_cloned_dir = os.path.join(path_to_cd_to,'llp_lab')
-		path_final=LITLAB_LLP_ROOT
-		url_git=URL_LLP_GIT
-
-		if not os.path.exists(path_of_cloned_dir):
-			clone_repo(path_to_cd_to, path_of_cloned_dir, url_git, path_final)
-		elif not os.path.exists(LITLAB_LLP_ROOT):
-			os.rename(path_of_cloned_dir, path_final)
-		else:
-			pass  # ?
-
-	else:
-		print('>> updating existing repository:',LITLAB_LLP_ROOT)
-		os.chdir(LITLAB_LLP_ROOT)
-		exec('git pull')
-
-	# Slingshot
-	if not os.path.exists(LITLAB_SLINGSHOT_ROOT):
-		path_to_cd_to = os.path.abspath(os.path.join(LITLAB_SLINGSHOT_ROOT,'..'))
-		path_of_cloned_dir = os.path.join(path_to_cd_to,'mpi-slingshot')
-		path_final=LITLAB_SLINGSHOT_ROOT
-		url_git=URL_SLINGSHOT_GIT
-
-		if not os.path.exists(path_of_cloned_dir):
-			clone_repo(path_to_cd_to, path_of_cloned_dir, url_git, path_final)
-		elif not os.path.exists(LITLAB_LLP_ROOT):
-			os.rename(path_of_cloned_dir, path_final)
-		else:
-			pass  # ?
-	else:
-		print('>> updating existing repository:',LITLAB_SLINGSHOT_ROOT)
-		os.chdir(LITLAB_SLINGSHOT_ROOT)
-		exec('git pull')
-	# no matter what?
-
 	add_to_python_path(LITLAB_SLINGSHOT_ROOT)
+	add_to_path( os.path.join(LITLAB_LLP_ROOT,'bin') )
 	add_to_path( os.path.join(LITLAB_SLINGSHOT_ROOT,'bin') )
 
 
-	## make sure llp_config.txt is saved
-	lab_llp_config_path = os.path.join(LITLAB_ROOT,'llp_config.txt')
-	lab_llp_manifest_path = os.path.join(LITLAB_ROOT,'llp_manifest.txt')
+	exec('source ~/.bash_profile')
 
-	if not os.path.exists(lab_llp_config_path):
-		#shutil.copyfile(PATH_HERE)
-		lab_path_config_default=os.path.join(PATH_HERE,'llp_config.txt')
-		#print(lab_path_config_default, lab_llp_config_path)
-		shutil.copyfile(lab_path_config_default, lab_llp_config_path)
+
+	if not os.path.exists(LITLAB_ROOT):
+		path_to_cd_to=os.path.abspath(os.path.join(LITLAB_ROOT,'..'))
+		clone_repo(path_to_cd_to, 'litlab', URL_LITLAB_GIT)
+	else:
+		print('>> updating existing repository:',LITLAB_ROOT)
+		os.chdir(LITLAB_ROOT)
+		exec('git pull')
+		exec('git submodule update')
 
 	return True
 
 
-	#cmd='git clone {git_url}'.format(path=LITLAB_ROOT, git_url=URL_BOGUSTEST_GIT)
-	#out=exec(cmd)
 
-	#clone_repo(LITLAB_ROOT, 'test', URL_BOGUSTEST_GIT, '/Users/ryan/litlab/test')
 
 def add_to_path(path, path_bash_profile=PATH_BASH_PROFILE,pathtype='PATH'):
 	if os.path.exists(path_bash_profile):
 		with open(path_bash_profile) as f:
 			for ln in f:
-				if ('$'+pathtype in ln) and (path in ln.replace('=',' ').replace(':',' ').split()):
+				if ('$'+pathtype in ln) and path in ln: # (path in ln.replace('=',' ').replace(':',' ').split()):
 					# already done
 					print('!',ln)
 					return True
 
 	# not found? ok then write it
 	with open(path_bash_profile,'a+') as of:
-		newln='\n\nexport {pathtype}="{newpath}:${pathtype}"      #from litlab-starterpack\n\n'.format(pathtype=pathtype,newpath=path)
+		newln='export {pathtype}="{newpath}:${pathtype}"      #from litlab-starterpack\n'.format(pathtype=pathtype,newpath=path)
 		of.write(newln)
 		#print(newln)
 
@@ -412,6 +365,7 @@ def add_to_python_path(path, path_bash_profile=PATH_BASH_PROFILE):
 def install_basic_llp(corpora=['MarkMark']):
 	print('>> checking for corpora through LLP')
 	import llp
+	print(llp.__file__)
 	for cname in corpora:
 		corpus = llp.load(cname)
 		if not os.path.exists(corpus.path_metadata):

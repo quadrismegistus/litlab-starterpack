@@ -49,15 +49,15 @@ def print_logo():
 
 def source_bash_profile():
 	if os.path.exists(PATH_BASH_PROFILE) and shutil.which('source'):
-		exec('source '+PATH_BASH_PROFILE)
+		execute('source '+PATH_BASH_PROFILE)
 
-def exec(cmd):
+def execute(cmd):
 	print('>> executing:',cmd)
 	os.system(cmd)
 	#output = subprocess.check_output(cmd.split())
 	#return output
 
-def hidden_exec(cmd):
+def hidden_execute(cmd):
 	output=''
 	try:
 		#output=subprocess.check_output(cmd.split())
@@ -83,7 +83,7 @@ def check_brew():
 		print('\n!! Homebrew not installed!')
 		answer = input('\n?? Would you like to install homebrew? [Y/n]\n')
 		if answer.strip().lower()!='n':
-			exec(cmd_install_brew)
+			execute(cmd_install_brew)
 			return check_brew()
 		else:
 			print('>> Please install Homebrew on your own: https://brew.sh/')
@@ -109,7 +109,7 @@ def check_anaconda():
 		print('\n!! Anaconda3 not installed!')
 		answer = input('\n?? Would you like to install Anaconda3? [Y/n]\n')
 		if answer.strip().lower()!='n':
-			exec('brew cask install anaconda')
+			execute('brew cask install anaconda')
 			return check_anaconda()
 		else:
 			print('>> Please install Anaconda for Python 3.x on your own: https://www.anaconda.com/distribution/')
@@ -155,27 +155,27 @@ def check_packages():
 def check_apps():
 	print('>> Checking whether basic Mac apps are installed...')
 	#for cmd in BREW_INSTALL_CMDS:
-	#	exec(cmd)
+	#	execute(cmd)
 
 	#if not os.path.exists('/Applications/TextMate.app'):
 	#	print('>> Installing TextMate, a good and open-source text editor for Mac...')
-	#	exec('brew cask install textmate')
+	#	execute('brew cask install textmate')
 
 	if not os.path.exists('/Applications/Atom.app'):
 		print('>> Installing Atom, a good and open-source text editor for Mac...')
-		exec('brew cask install atom')
+		execute('brew cask install atom')
 
 	#if not os.path.exists('/Applications/iTerm.app'):
 	#	print('>> Installing iTerm2, a good and open-source terminal for Mac...')
-	#	exec('brew cask install iterm2')
+	#	execute('brew cask install iterm2')
 
 	if not test_if_exec_exists('wget'):
 		print('>> Installing wget, which lets us download things from the Terminal...')
-		exec('brew install wget')
+		execute('brew install wget')
 
 	if not test_if_exec_exists('git'):
 		print('>> Installing git, which lets us use github to download/upload code collaboratively...')
-		exec('brew install git')
+		execute('brew install git')
 
 	return True
 
@@ -224,7 +224,7 @@ def git_gen_ssh_key(path_id_rsa):
 			exit()
 
 		cmd='ssh-keygen -q -N "" -f {path} -t rsa -b 4096 -C "{email}"'.format(path=path_id_rsa, email=GITHUB_EMAIL)
-		exec(cmd)
+		execute(cmd)
 
 		if not ssh_key_exists(path_id_rsa):
 		#if True:
@@ -236,17 +236,17 @@ def git_gen_ssh_key(path_id_rsa):
 
 def git_add_ssh_key_to_agent(path_id_rsa):
 	# start up agent
-	exec('eval "$(ssh-agent -s)"')
+	execute('eval "$(ssh-agent -s)"')
 
 	# add opt to ssh config
 	ssh_config_path=os.path.join(HOME,'.ssh','config')
 	with open(ssh_config_path,'a+') as of:
 		of.write('Host *\n\tAddKeysToAgent yes\n\tUseKeychain yes\n\tIdentityFile {path}\n\n'.format(path=path_id_rsa))
 
-	exec('ssh-add -K '+path_id_rsa)
+	execute('ssh-add -K '+path_id_rsa)
 
 def git_add_ssh_key_to_github(path_id_rsa):
-	exec('pbcopy < '+path_id_rsa+'.pub')
+	execute('pbcopy < '+path_id_rsa+'.pub')
 
 	url='https://github.com/settings/ssh/new'
 
@@ -304,7 +304,7 @@ def clone_repo(path_to_cd_to, repo_name, git_url, final_path=None):
 	path_of_cloned_dir = os.path.join(path_to_cd_to,repo_name)
 	os.chdir(path_to_cd_to)
 	try:
-		out=exec('git clone {git_url} && cd {repo_name} && git submodule init && git submodule update'.format(git_url=git_url,repo_name=repo_name))
+		out=execute('git clone {git_url} && cd {repo_name} && git submodule init && git submodule update'.format(git_url=git_url,repo_name=repo_name))
 		if final_path: os.rename(path_of_cloned_dir,final_path)
 
 	except subprocess.CalledProcessError as e:
@@ -326,7 +326,7 @@ def check_lab_software():
 	add_to_path( os.path.join(LITLAB_SLINGSHOT_ROOT,'bin') )
 
 
-	exec('source ~/.bash_profile')
+	execute('source ~/.bash_profile')
 
 
 	if not os.path.exists(LITLAB_ROOT):
@@ -335,8 +335,8 @@ def check_lab_software():
 	else:
 		print('>> updating existing repository:',LITLAB_ROOT)
 		os.chdir(LITLAB_ROOT)
-		exec('git pull')
-		exec('git submodule update')
+		execute('git pull')
+		execute('git submodule update')
 
 	return True
 

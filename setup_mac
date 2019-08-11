@@ -4,7 +4,12 @@ from __future__ import print_function
 import shutil,os,sys,subprocess,webbrowser,time
 from os.path import expanduser
 HOME=expanduser("~")
+try:
+    input = raw_input
+except NameError:
+    pass
 
+ABS_FILE = os.path.abspath(__file__)
 PATH_HERE=os.path.abspath(os.path.dirname(__file__))
 
 LITLAB_ROOT=os.path.join(HOME,'litlab')
@@ -16,14 +21,14 @@ GIT_PATH_ID_RSA = os.path.join(HOME,'.ssh','id_rsa')
 
 
 URL_LITLAB_GIT='git@github.com:quadrismegistus/litlab.git'
-URL_LLP_GIT='git@github.com:quadrismegistus/llp_lab.git'
+URL_LLP_GIT='git@github.com:quadrismegistus/llp.git'
 URL_SLINGSHOT_GIT='git@github.com:quadrismegistus/mpi-slingshot.git'
 URL_BOGUSTEST_GIT='git@github.com:erikfredner/test.git'
 
 
 PIP_PACKAGES=sorted(
 	['bs4','xopen','bleach','ujson','unicodecsv','mpi4py','numpy','pandas','scipy','paramiko',
-	'spacy','nltk']
+	'spacy','stanfordnlp','nltk','paramiko','smart_open','wget']
 )
 
 PATH_BASH_PROFILE = os.path.join(HOME,'.bash_profile')
@@ -39,6 +44,13 @@ GITHUB_EMAIL=''
 
 NAP=5
 
+def which(cmd):
+	try:
+		output = subprocess.check_output('source $HOME/.bash_profile; which '+cmd, shell=True) #, stderr=subprocess.STDOUT)
+		return str(output)
+	except Exception:
+		return None
+
 def print_logo():
 	with open(os.path.join(PATH_HERE,'logo.txt')) as f:
 		logo=f.read()
@@ -48,7 +60,7 @@ def print_logo():
 
 
 def source_bash_profile():
-	if os.path.exists(PATH_BASH_PROFILE) and shutil.which('source'):
+	if os.path.exists(PATH_BASH_PROFILE) and which('source'):
 		execute('source '+PATH_BASH_PROFILE)
 
 def execute(cmd):
@@ -68,7 +80,7 @@ def hidden_execute(cmd):
 	return str(output)
 
 def test_if_exec_exists(exec_name):
-	return bool(shutil.which(exec_name))
+	return bool(which(exec_name))
 
 
 ## STEP 1. Check Brew
@@ -78,7 +90,7 @@ def check_brew():
 	cmd_install_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 
 	print('>> Checking whether HomeBrew is installed...')
-	brew_path = shutil.which('brew')
+	brew_path = which('brew')
 	if not brew_path:
 		print('\n!! Homebrew not installed!')
 		answer = input('\n?? Would you like to install homebrew? [Y/n]\n')
@@ -99,27 +111,42 @@ def check_brew():
 ## Step 2. Check Anaconda
 
 
-
+import os,sys
 def check_anaconda():
 	print('>> Checking whether Anaconda (for Python 3.x) is installed...')
-	anaconda_path = shutil.which('conda')
-	pip_path = shutil.which('pip')
-	python_path = shutil.which('python')
+	anaconda_path = which('conda')
+	pip_path = which('pip')
+	python_path = which('python')
 	if not anaconda_path or not 'anaconda3' in anaconda_path or not 'anaconda3' in pip_path:
 		print('\n!! Anaconda3 not installed!')
 		answer = input('\n?? Would you like to install Anaconda3? [Y/n]\n')
 		if answer.strip().lower()!='n':
-			execute('brew cask install anaconda')
-			return check_anaconda()
+			#execute('brew cask install anaconda')
+			os.system('curl -o $HOME/anaconda3.sh https://repo.continuum.io/archive/Anaconda3-2019.07-MacOSX-x86_64.sh')
+			os.system('bash ~/anaconda3.sh -b -p $HOME/anaconda3')
+			os.system('echo "export PATH=\"$HOME/anaconda3/bin:$PATH\"\n" >> $HOME/.bash_profile')
+			os.system('source $HOME/.bash_profile')
+			#os.execl('$HOME/anaconda3/bin/python',*sys.argv)
+			#return check_anaconda()
+			reboot_with_anaconda()
 		else:
 			print('>> Please install Anaconda for Python 3.x on your own: https://www.anaconda.com/distribution/')
 			return False
 
 	else:
+		if 'anaconda3' not in sys.executable:
+			reboot_with_anaconda()
+			#os.execl('%s/anaconda3/bin/python' % os.path.expanduser('~'),'python',__file__)
 		return True
 
+def reboot_with_anaconda():
+	import time
+	print('\n >> Rebooting this script using the anaconda3 version of python . . .\n')
+	time.sleep(1)
+	os.execl('%s/anaconda3/bin/python' % os.path.expanduser('~'),'python',ABS_FILE)
+
 # def add_anaconda_to_path():
-# 	anaconda_path = shutil.which('conda')
+# 	anaconda_path = which('conda')
 # 	anaconda_bin_path = os.path.split(anaconda_path)[0]
 #
 # 	ofn=os.path.join(HOME,'.bash_profile')
@@ -132,20 +159,34 @@ def check_anaconda():
 
 ## Step 3. Check pip packages
 
+def is_package_installed(pkgname):
+	import subprocess
+	FNULL = open(os.devnull, 'w')
+	try:
+		subprocess.check_output('$HOME/anaconda3/bin/python -c "import %s" >> /dev/null' % pkgname,shell=True)
+		return True
+	except subprocess.CalledProcessError:
+		return False
+
 
 def check_packages():
-	import importlib.util
+	#import importlib.util
 
 	print('>> Installing common Python packages...')
 
+	#need_reboot=False
 	for pkg in PIP_PACKAGES:
-		spec = importlib.util.find_spec(pkg)
-		if spec is None:
+		#spec = importlib.util.find_spec(pkg)
+		#if spec is None:
+		if not is_package_installed(pkg):
 			print('>>',pkg +" is not installed...")
-			cmd='pip install %s' % pkg
+			cmd='$HOME/anaconda3/bin/pip install %s' % pkg
 			print('>> executing:',cmd)
 			os.system(cmd)
 
+	#if need_reboot:
+	#	import os,sys
+	#	os.execl('$HOME/anaconda3/bin/python',)
 	return True
 
 
@@ -169,9 +210,9 @@ def check_apps():
 	#	print('>> Installing iTerm2, a good and open-source terminal for Mac...')
 	#	execute('brew cask install iterm2')
 
-	if not test_if_exec_exists('wget'):
-		print('>> Installing wget, which lets us download things from the Terminal...')
-		execute('brew install wget')
+	#if not test_if_exec_exists('wget'):
+	#	print('>> Installing wget, which lets us download things from the Terminal...')
+	#	execute('brew install wget')
 
 	if not test_if_exec_exists('git'):
 		print('>> Installing git, which lets us use github to download/upload code collaboratively...')
@@ -295,6 +336,8 @@ def check_git(path_id_rsa=GIT_PATH_ID_RSA):
 		webbrowser.open_new(url)
 		exit()
 
+	reboot_with_anaconda()
+
 
 
 
@@ -332,11 +375,13 @@ def check_lab_software():
 	if not os.path.exists(LITLAB_ROOT):
 		path_to_cd_to=os.path.abspath(os.path.join(LITLAB_ROOT,'..'))
 		clone_repo(path_to_cd_to, 'litlab', URL_LITLAB_GIT)
+		reboot_with_anaconda()
 	else:
 		print('>> updating existing repository:',LITLAB_ROOT)
 		os.chdir(LITLAB_ROOT)
 		execute('git pull')
 		execute('git submodule update')
+
 
 	return True
 
@@ -349,7 +394,7 @@ def add_to_path(path, path_bash_profile=PATH_BASH_PROFILE,pathtype='PATH'):
 			for ln in f:
 				if ('$'+pathtype in ln) and path in ln: # (path in ln.replace('=',' ').replace(':',' ').split()):
 					# already done
-					print('!',ln)
+					#print('!',ln)
 					return True
 
 	# not found? ok then write it
@@ -359,6 +404,7 @@ def add_to_path(path, path_bash_profile=PATH_BASH_PROFILE,pathtype='PATH'):
 		#print(newln)
 
 def add_to_python_path(path, path_bash_profile=PATH_BASH_PROFILE):
+	if not path in sys.path: sys.path.insert(0,path)
 	return add_to_path(path, path_bash_profile=path_bash_profile, pathtype='PYTHONPATH')
 
 
@@ -383,7 +429,14 @@ def run_all():
 	source_bash_profile()
 
 	# Set the steps
-	steps = [check_brew, check_anaconda, check_packages, check_apps, check_git, check_lab_software, install_basic_llp]
+	steps = [
+		check_brew,  			# 1
+		check_anaconda, 		# 2
+		check_packages,			# 3
+		check_apps,				# 4
+		check_git,				# 5
+		check_lab_software,		# 6
+		install_basic_llp]		# 7
 	#steps = []
 	num_steps = len(steps)
 
